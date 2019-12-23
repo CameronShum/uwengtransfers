@@ -1,12 +1,6 @@
 const rp = require("request-promise");
 const $ = require("cheerio");
 
-const type = "BME";
-const year = "2021";
-
-const url = (type, year) =>
-  `http://www.ucalendar.uwaterloo.ca/${year}/COURSE/course-${type}.html`;
-
 const validreq = (req, name) => {
   if (req === undefined) {
     return "";
@@ -19,8 +13,8 @@ const validreq = (req, name) => {
   }
 };
 
-rp(url(type, year))
-  .then(function(html) {
+const getCourseInfo = function(url, type) {
+  return rp(url).then(function(html) {
     let courseInfo = {};
     const courseLength = $("table > tbody", html).length;
     const courses = $("table > tbody", html);
@@ -59,7 +53,7 @@ rp(url(type, year))
       }
     }
     return courseInfo;
-  })
-  .catch(function(err) {
-    console.log(err);
   });
+};
+
+module.exports = getCourseInfo;
