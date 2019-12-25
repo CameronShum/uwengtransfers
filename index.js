@@ -1,8 +1,12 @@
 const express = require("express");
-const cors = require("cors");
+const format = require("date-fns/format");
+const addYears = require("date-fns/addYears");
 const getCourseInfo = require("./getCourseInfo");
-const app = express();
 
+const app = express();
+const currYear = format(new Date(), "yy");
+const nextYear = format(addYears(new Date(), 1), "yy");
+const year = currYear + nextYear;
 const port = 5000;
 
 // Body parser
@@ -10,12 +14,12 @@ app.use(express.urlencoded({ extended: false }));
 
 // Home route
 app.get("/", (req, res) => {
-  res.send("Basic Endpoint");
+  res.send("API for getting course data from any Waterloo program");
 });
 
-app.get("/courses/:type/:year", cors(), (req, res, next) => {
-  const { year, type } = req.params;
-
+// Get all courses from a program
+app.get("/courses/:type", (req, res) => {
+  const { type } = req.params;
   const url = `http://www.ucalendar.uwaterloo.ca/${year}/COURSE/course-${type}.html`;
   getCourseInfo(url, type).then(response => res.send(response));
 });
