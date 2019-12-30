@@ -3,6 +3,7 @@ const format = require("date-fns/format");
 const addYears = require("date-fns/addYears");
 const getCourseInfo = require("./getCourseInfo");
 
+// Set constants
 const app = express();
 const currYear = format(new Date(), "yy");
 const nextYear = format(addYears(new Date(), 1), "yy");

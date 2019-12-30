@@ -1,6 +1,7 @@
 const rp = require("request-promise");
 const $ = require("cheerio");
 
+// Checkes a given html tag for valid request.
 const validreq = (req, name) => {
   if (req === undefined) {
     return "";
@@ -13,6 +14,7 @@ const validreq = (req, name) => {
   }
 };
 
+// Parses url body for course info.
 const getCourseInfo = function(url, type) {
   return rp(url).then(function(html) {
     let courseInfo = {};
@@ -25,19 +27,12 @@ const getCourseInfo = function(url, type) {
       let antireq = "";
       let coreq = "";
 
-      const prereq = validreq($("tr > td > i", courses[i])[1], "Prereq");
+      const req = $("tr > td > i", courses[i])
+        .text()
+        .split(".")
+        .map(val => val.split(":"));
 
-      if (
-        $("tr > td > i", courses[i])[2] !== undefined &&
-        $("tr > td > i", courses[i])[2]
-          .children[0].data.replace(/ /, "")
-          .slice(0, 5) === "Coreq"
-      ) {
-        coreq = validreq($("tr > td > i", courses[i])[2], "Coreq");
-        antireq = validreq($("tr > td > i", courses[i])[3], "Antireq");
-      } else {
-        antireq = validreq($("tr > td > i", courses[i])[2], "Antireq");
-      }
+      console.log(req);
 
       if (course[0] !== undefined) {
         const name = course[0].next.data
@@ -45,15 +40,17 @@ const getCourseInfo = function(url, type) {
           .replace(/ /g, "");
         courseInfo[name] = {
           name: name,
-          id: id.children[0].data.replace(/[^0-9]+/g, ""),
-          prereq: prereq.split(/, |; /),
-          coreq: coreq.replace(" ", "").split(/, |; /),
-          antireq: antireq.replace(" ", "").split(/, |; /)
+          id: id.children[0].data.replace(/[^0-9]+/g, "")
         };
       }
     }
     return courseInfo;
   });
 };
+
+getCourseInfo(
+  `http://www.ucalendar.uwaterloo.ca/2021/COURSE/course-ME.html`,
+  "ME"
+);
 
 module.exports = getCourseInfo;
