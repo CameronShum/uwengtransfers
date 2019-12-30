@@ -18,10 +18,10 @@ app.get("/", (req, res) => {
 });
 
 // Get all courses from a program
-app.get("/courses/:type", (req, res) => {
-  const { type } = req.params;
-  const url = `http://www.ucalendar.uwaterloo.ca/${year}/COURSE/course-${type}.html`;
-  getCourseInfo(url, type).then(response => res.send(response));
+app.get("/courses", (req, res) => {
+  const { code } = req.query;
+  const url = `http://www.ucalendar.uwaterloo.ca/${year}/COURSE/course-${code}.html`;
+  getCourseInfo(url, code).then(response => res.send(response));
 });
 
 // Listen on port 5000
